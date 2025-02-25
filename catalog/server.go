@@ -3,6 +3,7 @@ package catalog
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
 
 	"github.com/muhammadali7768/go-grpc-microservices/catalog/pb"
@@ -44,21 +45,31 @@ func (s *grpcServer) PostProduct(ctx context.Context, r *pb.PostProductRequest) 
 }
 
 func (s *grpcServer) GetProduct(ctx context.Context, r *pb.GetProductRequest) (*pb.GetProductResponse, error) {
-	a, err := s.service.GetProduct(ctx, r.Id)
+	p, err := s.service.GetProduct(ctx, r.Id)
 	if err != nil {
 		return nil, err
 	}
 	return &pb.GetProductResponse{Product: &pb.Product{
-		Id:          a.ID,
-		Name:        a.Name,
-		Description: a.Description,
-		Price:       a.Price,
+		Id:          p.ID,
+		Name:        p.Name,
+		Description: p.Description,
+		Price:       p.Price,
 	}}, nil
 }
 
 func (s *grpcServer) GetProducts(ctx context.Context, r *pb.GetProductsRequest) (*pb.GetProductsResponse, error) {
-	res, err := s.service.GetProducts(ctx, r.Skip, r.Take)
+	var res []Product
+	var err error
+	if r.Query != "" {
+		res, err = s.service.SearchProducts(ctx, r.Query, r.Skip, r.Take)
+	} else if len(r.Ids) != 0 {
+		res, err = s.service.GetProductByIDs(ctx, r.Ids)
+	} else {
+		res, err = s.service.GetProducts(ctx, r.Skip, r.Take)
+	}
+
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	products := []*pb.Product{}
