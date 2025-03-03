@@ -3,6 +3,7 @@ package account
 import (
 	"context"
 	"database/sql"
+	"log"
 
 	_ "github.com/lib/pq"
 )
@@ -21,12 +22,15 @@ type postgresRepository struct {
 func NewPostgresRepository(url string) (Repository, error) {
 	db, err := sql.Open("postgres", url)
 	if err != nil {
+		log.Println("Account database connection error")
 		return nil, err
 	}
 	err = db.Ping()
 	if err != nil {
+		log.Println("Account database ping error")
 		return nil, err
 	}
+	log.Println("DATABASE connected successfully")
 	return &postgresRepository{db}, nil
 }
 
@@ -48,6 +52,7 @@ func (r *postgresRepository) GetAccountByID(ctx context.Context, id string) (*Ac
 	account := Account{}
 	err := row.Scan(&account.ID, &account.Name)
 	if err != nil {
+		log.Println("Error in account repository:GetAccountByID")
 		return nil, err
 	}
 	return &account, nil

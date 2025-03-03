@@ -3,6 +3,7 @@ package account
 import (
 	"context"
 	"fmt"
+	"log"
 	"net"
 
 	"github.com/muhammadali7768/go-grpc-microservices/account/pb"
@@ -42,6 +43,7 @@ func (s *grpcServer) PostAccount(ctx context.Context, r *pb.PostAccountRequest) 
 }
 
 func (s *grpcServer) GetAccount(ctx context.Context, r *pb.GetAccountRequest) (*pb.GetAccountResponse, error) {
+	log.Println("account server:", r.Id)
 	a, err := s.service.GetAccount(ctx, r.Id)
 	if err != nil {
 		return nil, err

@@ -2,9 +2,11 @@ package account
 
 import (
 	"context"
+	"log"
 
 	"github.com/muhammadali7768/go-grpc-microservices/account/pb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type Client struct {
@@ -13,8 +15,10 @@ type Client struct {
 }
 
 func NewClient(url string) (*Client, error) {
-	conn, err := grpc.NewClient(url, grpc.WithInsecure())
+	conn, err := grpc.NewClient(url, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	log.Println("account client NewClient URL", url)
 	if err != nil {
+		log.Fatalf("Failed to create gRPC client: %v", err)
 		return nil, err
 	}
 
@@ -35,9 +39,11 @@ func (c *Client) PostAccount(ctx context.Context, name string) (*Account, error)
 }
 
 func (c *Client) GetAccount(ctx context.Context, id string) (*Account, error) {
+	log.Println("account client BEFORE:", id)
 	r, err := c.service.GetAccount(ctx, &pb.GetAccountRequest{Id: id})
-
+	log.Println("account client:", r)
 	if err != nil {
+		log.Println("Error in account client:GetAccount")
 		return nil, err
 	}
 	return &Account{ID: r.Account.Id, Name: r.Account.Name}, nil

@@ -4,6 +4,8 @@
 // 	protoc        v5.28.2
 // source: account.proto
 
+// run this command: protoc --go_out=. --go-grpc_out=. account.proto
+
 package pb
 
 import (
