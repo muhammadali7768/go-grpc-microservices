@@ -36,9 +36,9 @@ func (s *accountService) PostAccount(ctx context.Context, name string) (*Account
 	return account, nil
 }
 func (s *accountService) GetAccount(ctx context.Context, id string) (*Account, error) {
-	log.Println("account SERVICE BEFORE:", id)
+
 	acount, err := s.repo.GetAccountByID(ctx, id)
-	log.Println("account SERVICE:", acount)
+
 	if err != nil {
 		log.Println("Error in account service:GetAccount")
 		return nil, err
